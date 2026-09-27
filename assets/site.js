@@ -12,7 +12,11 @@
     portrait.loading = 'eager';
     portrait.decoding = 'async';
     portrait.fetchPriority = 'high';
-    portrait.style.objectPosition = '50% 10%';
+    // Fit the full portrait inside the existing circle without cropping the head or chin.
+    portrait.style.objectFit = 'contain';
+    portrait.style.objectPosition = 'center';
+    portrait.style.padding = 'clamp(3px, 0.6vw, 6px)';
+    portrait.style.backgroundColor = '#fff';
     portrait.addEventListener('load', () => initials.replaceWith(portrait), {once: true});
     portrait.src = new URL('assets/profile.webp', document.baseURI).href;
   }
