@@ -2,6 +2,20 @@
   'use strict';
   const root = document.documentElement;
   const ko = root.lang === 'ko';
+  // Use the owner-provided portrait in the shared English/Korean profile header.
+  // Keep the initials as a fallback until the local image has loaded successfully.
+  const initials = document.querySelector('.identity .monogram');
+  if (initials) {
+    const portrait = new Image(132, 132);
+    portrait.className = 'profile-photo';
+    portrait.alt = ko ? '프로필 사진' : 'Profile photograph';
+    portrait.loading = 'eager';
+    portrait.decoding = 'async';
+    portrait.fetchPriority = 'high';
+    portrait.style.objectPosition = '50% 10%';
+    portrait.addEventListener('load', () => initials.replaceWith(portrait), {once: true});
+    portrait.src = new URL('assets/profile.webp', document.baseURI).href;
+  }
   const theme = document.querySelector('#theme-toggle');
   const updateThemeLabel = () => {
     const isDark = root.dataset.theme === 'dark';
