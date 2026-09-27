@@ -2,22 +2,40 @@
   'use strict';
   const root = document.documentElement;
   const ko = root.lang === 'ko';
-  // Use the owner-provided portrait in the shared English/Korean profile header.
-  // Keep the initials as a fallback until the local image has loaded successfully.
+  // Keep the responsive circular frame separate from the portrait's scale.
+  // Retain initials as a fallback until the owner-provided image has loaded.
   const initials = document.querySelector('.identity .monogram');
   if (initials) {
-    const portrait = new Image(132, 132);
-    portrait.className = 'profile-photo';
+    const frame = document.createElement('span');
+    frame.className = 'profile-photo';
+    Object.assign(frame.style, {
+      display: 'block',
+      position: 'relative',
+      overflow: 'hidden',
+      backgroundColor: '#fff'
+    });
+    const portrait = new Image(264, 339);
+    portrait.className = 'profile-photo-image';
     portrait.alt = ko ? '프로필 사진' : 'Profile photograph';
     portrait.loading = 'eager';
     portrait.decoding = 'async';
     portrait.fetchPriority = 'high';
-    // Fit the full portrait inside the existing circle without cropping the head or chin.
-    portrait.style.objectFit = 'contain';
-    portrait.style.objectPosition = 'center';
-    portrait.style.padding = 'clamp(3px, 0.6vw, 6px)';
-    portrait.style.backgroundColor = '#fff';
-    portrait.addEventListener('load', () => initials.replaceWith(portrait), {once: true});
+    // Show a wider head-and-shoulders composition without changing the source image.
+    // The frame keeps its existing desktop/mobile size; only the image is reduced.
+    Object.assign(portrait.style, {
+      position: 'absolute',
+      left: '50%',
+      bottom: '0',
+      height: '88%',
+      width: 'auto',
+      maxWidth: 'none',
+      display: 'block',
+      transform: 'translateX(-50%)'
+    });
+    portrait.addEventListener('load', () => {
+      frame.appendChild(portrait);
+      initials.replaceWith(frame);
+    }, {once: true});
     portrait.src = new URL('assets/profile.webp', document.baseURI).href;
   }
   const theme = document.querySelector('#theme-toggle');
